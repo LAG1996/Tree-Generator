@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Building Generator</title>
+
+		<!--<link rel="shortcut icon" href="#">-->
+
+		<!--Import Bootstrap CSS-->
+		<link rel="stylesheet" href="./imports/bootstrap/css/bootstrap.min.css">
+		<!--Import font awesome-->
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+		<link rel="stylesheet" href="./style/index.style.css">
+	</head>
+	<body>
+		<div id="canvas-container"></div>
+
+		<div class="flex-column position-absolute control-panel">
+			<div class="header">
+				<i class="fas fa-arrows-alt control panel-move"></i>
+				<i class="fas fa-caret-up control toggle-collapse"></i>
+			</div>
+			<div class="body">
+				<div class="control-option">Option</div>
+				<div class="control-option">Option</div>
+			</div>
+		</div>
+
+		<script src="./imports/three.js"></script>
+		<script src="./imports/threejs/OrbitControls.js"></script>
+		<script src="./imports/threejs/QuickHull.js"></script>
+		<script src="./imports/jquery.js"></script>
+		<script src="./imports/bootstrap/js/bootstrap.min.js"></script>
+
+		<script src="./scripts/config.js"></script>
+		<script src='./scripts/control-panel/gui.js'></script>
+
+		<script type="module" src="./scripts/startup.js"></script>
+		<script type="module" src="./scripts/main.js"></script>
+	</body>
+</html>
