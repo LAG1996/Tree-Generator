@@ -1,2 +1,2 @@
 # Tree-Generator
-## A project about tree generation made for fun.
+## A graphics project about tree generation made for fun.
