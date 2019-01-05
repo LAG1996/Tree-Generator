@@ -28,6 +28,8 @@ export function generateTree(nodeSequence, nodeRule) {
 		depth: 0,
 	};
 
+	console.log(nodeSequence);
+
 	const points = [...origin.position];
 	const edges = [];
 
@@ -38,7 +40,12 @@ export function generateTree(nodeSequence, nodeRule) {
 
 		const newNodes = [];
 		for (let i = 0; i < k; i += 1) {
-			const newNode = { parent: p, position: nodeRule(p, origin), children: [], depth: p.depth + 1};
+			const newNode = {
+				parent: p,
+				position: nodeRule(p, origin, p.children.length),
+				children: [],
+				depth: p.depth + 1
+			};
 			p.children.push(newNode);
 			newNodes.push(newNode);
 

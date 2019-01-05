@@ -1,8 +1,10 @@
 import { Engine as E } from '/scripts/engine/engine.js';
 import { VertexLexicOrder } from '/scripts/geometry-generating-stuff/vertex-ordering.js';
 import { generateTree } from '/scripts/geometry-generating-stuff/making-a-tree.js';
-import { nodeSet, branchRule } from '/scripts/geometry-generating-stuff/test-branch-function-1.js'
+import { nodeSet, branchRule } from '/scripts/geometry-generating-stuff/test-branch-function-1.js';
+import spherePosition from '/scripts/geometry-generating-stuff/position-rules/sphere-position.js';
 
+// add a grid to the main scene to give a sense of place
 const gridSideLength = 100;
 const gridDivisions = 10;
 
@@ -10,89 +12,130 @@ const grid = new THREE.GridHelper(gridSideLength, gridDivisions);
 
 E.addToScene(grid, 'main-scene');
 
-const origin = { x: gridSideLength, y: 0, z: gridSideLength };
+// some preliminary stuff we'll need to draw lines and points in the scene
+const lineMat = new THREE.LineBasicMaterial({ color: 0xaadeee }); // line material
+const lineGeom = new THREE.BufferGeometry(); // an empty buffer object
 
-// we're going to use circles to define the points on a shape
+// point material
+const pointMat = new THREE.PointsMaterial({
+	color: 0x77abff,
+	sizeAttenuation: false,
+	size: 2,
+}); 
+const pointGeom = new THREE.BufferGeometry(); // an empty buffer object
 
-const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-const geom = new THREE.CircleBufferGeometry( 0.001, 35 );
-const circle = new THREE.Mesh( geom, mat );
+//const treeData = generateTree(nodeSet, branchRule);
 
-// define a cube
-const cubeDimension = 10;
-// generate cube geometry
-const cubeGeom = new THREE.BoxBufferGeometry(cubeDimension, cubeDimension, cubeDimension);
-const edgeGeom = new THREE.EdgesGeometry(cubeGeom);
-const lines = new THREE.LineSegments(edgeGeom, new THREE.LineBasicMaterial({ color: 0xaadeff }))
-// draw the cube's edges
-E.addToScene(lines, 'main-scene');
+const positionRule = spherePosition(2, 1, 0, Math.PI / 2, Math.PI / 2, 0, Math.PI * 2);
 
-let verts = getVertexPositions(cubeGeom.attributes.position.array);
-verts = VertexLexicOrder(verts, false);
+const growRule = [
+	4,
+		4,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+		4,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+		4,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+		4,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+			4,
+				0,
+				0,
+				0,
+				0,
+];
+const treeData = generateTree(growRule, positionRule);
 
-const halfLength = (verts.length) / 2;
-const r = ((halfLength + 1) % 2) / 2;
-/*
-const orderedVerts = [];
-for (let i = 0; i < verts.length; i += 1) {
-	const newCircle = circle.clone();
-	const pos = { x: i - halfLength + r, y: 0, z: 0 };
-	newCircle.position.set(pos.x, pos.y, pos.z);
+console.log(treeData.points);
 
-	orderedVerts.push({ vert: newCircle, currPos: {...pos}, ordPos: {...pos}, cubePos: verts[i] });
-
-	E.addToScene(newCircle, 'main-scene', {
-		askFor: [],
-		onDraw: () => {
-			newCircle.lookAt(E.camera.position);
-		}
-	});
-}*/
-
-
-
-const treeData = generateTree(nodeSet, branchRule);
-const points = getVertexPositions(treeData.points);
-const edges = getVertexPositions(treeData.edges);
-
-console.log(points);
-console.log(edges);
-for (let i = 0; i < points.length; i += 1) {
-	const newCircle = circle.clone();
-	newCircle.position.set(points[i].x, points[i].y, points[i].z);
-	E.addToScene(newCircle, 'main-scene', {
-		askFor: [],
-		onDraw: () => {
-			newCircle.lookAt(E.camera.position);
-		}
-	});
-}
-
-const lineGeom = new THREE.Geometry();
-lineGeom.vertices.push(...edges)
+lineGeom.addAttribute('position', new THREE.BufferAttribute(new Float32Array(treeData.edges), 3));
 E.addToScene(
 	new THREE.LineSegments(
 		lineGeom,
-		new THREE.LineBasicMaterial({ color: 0xffffff }),
+		lineMat,
 	),
 	'main-scene',
-)
-
-/*
-var material = new THREE.LineBasicMaterial({
-	color: 0x0000ff
-});
-
-var geometry = new THREE.Geometry();
-geometry.vertices.push(
-	new THREE.Vector3( -10, 0, 0 ),
-	new THREE.Vector3( 0, 10, 0 ),
-	new THREE.Vector3( 10, 0, 0 )
 );
 
-var line = new THREE.Line( geometry, material );
-
-E.addToScene(line, 'main-scene');*/
+pointGeom.addAttribute('position', new THREE.BufferAttribute(new Float32Array(treeData.points), 3));
+E.addToScene(
+	new THREE.Points(
+		pointGeom,
+		pointMat,
+	),
+	'main-scene',
+);
 
 function getVertexPositions(posAttrArray) {
 	const verts = [];
